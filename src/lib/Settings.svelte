@@ -1,8 +1,10 @@
 <script lang="ts">
-  import { openUrl } from '@tauri-apps/plugin-opener';
+  import { getVersion } from '@tauri-apps/api/app';
+  import { check } from '@tauri-apps/plugin-updater';
   import { api, applyTheme, type Settings, type AuthKind } from './api';
   import { guard, toast } from './toast.svelte';
   import Modal from './Modal.svelte';
+  import { askMaster } from './prompt.svelte';
 
   let {
     settings,
@@ -10,15 +12,17 @@
     refresh
   }: { settings: Settings; authKind: string; refresh: () => void } = $props();
 
-  const VERSION = '1.0.0';
-  const REPO = 'PoxiiTV/Asegurao';
+  let version = $state('');
+  getVersion().then((v) => (version = v));
 
+  // svelte-ignore state_referenced_locally
   let s = $state<Settings>({ ...settings, intruder: { ...settings.intruder } });
   let changingPass = $state(false);
   let checking = $state(false);
 
   // Cambio de contraseña maestra
   let cCurrent = $state('');
+  // svelte-ignore state_referenced_locally
   let cKind = $state<AuthKind>(authKind as AuthKind);
   let cNew = $state('');
 
@@ -61,23 +65,28 @@
     }
   }
 
+  // Descarga, verifica la firma e instala; el instalador reabre Asegurao.
   async function checkUpdate() {
     checking = true;
     try {
-      const r = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`);
-      if (!r.ok) throw new Error('sin conexión');
-      const j = await r.json();
-      const latest = (j.tag_name || '').replace(/^v/, '');
-      if (latest && latest > VERSION) {
-        toast(`Hay una versión nueva (${latest})`, 'ok');
-        if (j.html_url) openUrl(j.html_url);
-      } else {
+      const update = await check();
+      if (!update) {
         toast('Ya tienes la última versión', 'ok');
+      } else {
+        toast(`Descargando la versión ${update.version}…`, 'ok');
+        await update.download();
+        await api.prepareUpdate();
+        await update.install();
       }
     } catch {
       toast('No se pudo comprobar las actualizaciones', 'error');
     }
     checking = false;
+  }
+
+  async function quit() {
+    const m = await askMaster('Asegurao dejará de proteger tus apps hasta que vuelvas a abrirlo.');
+    if (m) await guard(() => api.quitApp(m));
   }
 </script>
 
@@ -178,12 +187,19 @@
   <div class="about">
     <div class="a-logo">🛡️</div>
     <div>
-      <b>Asegurao <span class="ver">v{VERSION}</span></b>
+      <b>Asegurao <span class="ver">v{version}</span></b>
       <p>Protege tus aplicaciones con contraseña.</p>
     </div>
     <button class="btn ghost sm" disabled={checking} onclick={checkUpdate} style="margin-left:auto">
       {checking ? 'Comprobando…' : 'Buscar actualizaciones'}
     </button>
+  </div>
+  <div class="opt quit">
+    <div>
+      <b>Cerrar Asegurao</b>
+      <p>Apaga la protección hasta que lo vuelvas a abrir.</p>
+    </div>
+    <button class="btn ghost sm" onclick={quit}>Cerrar</button>
   </div>
 </section>
 
@@ -349,6 +365,9 @@
     font-size: 12px;
     color: var(--muted);
     margin-top: 2px;
+  }
+  .quit {
+    margin-top: 8px;
   }
   .ver {
     font-size: 11px;

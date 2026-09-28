@@ -37,6 +37,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_notification::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_autostart::init(MacosLauncher::LaunchAgent, Some(vec![])))
         .invoke_handler(tauri::generate_handler![
             commands::get_snapshot,
@@ -63,6 +64,8 @@ pub fn run() {
             commands::unlock_attempt,
             commands::unlock_cancel,
             commands::unlock_pending,
+            commands::quit_app,
+            commands::prepare_update,
             commands::gate_check,
             commands::gate_cancel,
         ])
@@ -83,6 +86,9 @@ pub fn run() {
                 });
                 return Ok(());
             }
+
+            // "Finalizar tarea" / taskkill ya no pueden cerrar Asegurao.
+            procctl::protect_self();
 
             let data = store::load();
             let start_with_windows = data.settings.start_with_windows;

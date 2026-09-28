@@ -85,7 +85,9 @@ export const api = {
   unlockAttempt: (exe: string, secret: string) =>
     invoke<string>('unlock_attempt', { exe, secret }),
   unlockCancel: (exe: string) => invoke('unlock_cancel', { exe }),
-  unlockPending: <T>() => invoke<T | null>('unlock_pending')
+  unlockPending: <T>() => invoke<T | null>('unlock_pending'),
+  quitApp: (master: string) => invoke('quit_app', { master }),
+  prepareUpdate: () => invoke('prepare_update')
 };
 
 export function applyTheme(theme: string) {

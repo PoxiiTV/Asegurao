@@ -22,6 +22,7 @@
       {masterReq.note || 'Esta acción reduce la protección.'} Después, Windows te pedirá también tu
       contraseña.
     </p>
+    <!-- svelte-ignore a11y_autofocus -->
     <input
       class="field"
       type="password"

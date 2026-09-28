@@ -59,6 +59,7 @@
     <div class="logo">🛡️</div>
     <h1>Asegurao</h1>
     <p class="sub">Introduce tu {authKind === 'pin' ? 'PIN' : 'contraseña'} para entrar</p>
+    <!-- svelte-ignore a11y_autofocus -->
     <input
       class="field"
       type="password"

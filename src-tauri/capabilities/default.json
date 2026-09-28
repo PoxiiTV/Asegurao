@@ -2,7 +2,10 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "Permisos de las ventanas de Asegurao",
-  "windows": ["main", "unlock"],
+  "windows": [
+    "main",
+    "unlock"
+  ],
   "permissions": [
     "core:default",
     "core:window:allow-show",
@@ -13,6 +16,7 @@
     "core:window:allow-start-dragging",
     "opener:default",
     "dialog:default",
-    "notification:default"
+    "notification:default",
+    "updater:default"
   ]
 }

@@ -31,6 +31,7 @@
     <div class="ico">🛡️<span class="badge">🔒</span></div>
     <h1>Desinstalar Asegurao</h1>
     <p class="sub">Introduce tu contraseña maestra para confirmar la desinstalación.</p>
+    <!-- svelte-ignore a11y_autofocus -->
     <input
       bind:this={input}
       class="field"

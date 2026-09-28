@@ -318,7 +318,48 @@ pub fn set_app_enabled(state: State<Arc<AppState>>, exe: String, enabled: bool, 
     if let Some(a) = data.apps.iter_mut().find(|a| a.exe.eq_ignore_ascii_case(&exe)) {
         a.enabled = enabled;
     }
-    store::save(&data)
+    store::save(&data)?;
+    if !enabled {
+        forget(&state, &exe);
+    }
+    Ok(())
+}
+
+// Deja de vigilar una app: la descongela y olvida sus permisos.
+fn forget(state: &AppState, exe: &str) {
+    let key = exe.to_lowercase();
+    let mut rt = state.rt.lock().unwrap();
+    rt.release(&key, false);
+    rt.allowed.remove(&key);
+    rt.dormant.remove(&key);
+}
+
+/// Cerrar Asegurao del todo (el proceso está protegido contra "Finalizar tarea").
+#[tauri::command]
+pub fn quit_app(state: State<Arc<AppState>>, master: String) -> Result<(), String> {
+    {
+        let data = state.data.lock().unwrap();
+        let auth = data.auth.as_ref().ok_or("No configurado")?;
+        if !verify_secret(&master, &auth.hash) {
+            return Err("Contraseña maestra incorrecta".into());
+        }
+    }
+    if !uac::confirm() {
+        return Err("Se necesita la confirmación de Windows".into());
+    }
+    state.rt.lock().unwrap().release_all();
+    std::process::exit(0);
+}
+
+/// Antes de instalar una actualización (la app se cierra sola): nada congelado.
+#[tauri::command]
+pub fn prepare_update(state: State<Arc<AppState>>) -> Result<(), String> {
+    let mut rt = state.rt.lock().unwrap();
+    if !rt.session_unlocked {
+        return Err("Sesión bloqueada".into());
+    }
+    rt.release_all();
+    Ok(())
 }
 
 #[tauri::command]
@@ -338,7 +379,7 @@ pub fn remove_app(state: State<Arc<AppState>>, exe: String, master: String) -> R
         data.apps.retain(|a| !a.exe.eq_ignore_ascii_case(&exe));
         store::save(&data)?;
     }
-    state.rt.lock().unwrap().allowed.remove(&exe.to_lowercase());
+    forget(&state, &exe);
     Ok(())
 }
 
@@ -424,15 +465,14 @@ pub fn unlock_attempt(state: State<Arc<AppState>>, exe: String, secret: String) 
     };
 
     if ok {
-        procctl::resume(&exe);
         let allow = if trust == 0 {
-            Allow::UntilExit
+            Allow::WhileShown { seen: false, hidden_since: None }
         } else {
             Allow::Until(Instant::now() + Duration::from_secs(trust as u64 * 60))
         };
         let mut rt = state.rt.lock().unwrap();
+        rt.release(&key, false);
         rt.allowed.insert(key.clone(), allow);
-        rt.pending = None;
         drop(rt);
         state.prompt_fails.lock().unwrap().remove(&key);
         history::add(history::Entry { ts: 0, exe, display, result: "allowed".into(), photo: String::new() });
@@ -474,9 +514,8 @@ pub fn unlock_cancel(state: State<Arc<AppState>>, exe: String) {
         data.apps.iter().find(|a| a.exe.eq_ignore_ascii_case(&exe)).map(|a| a.display.clone()).unwrap_or_else(|| exe.clone())
     };
     // ponytail: foto del intruso se captura aquí cuando se supera el umbral (2ª fase).
-    procctl::terminate(&exe);
     let mut rt = state.rt.lock().unwrap();
-    rt.pending = None;
+    rt.release(&key, true);
     rt.allowed.remove(&key);
     drop(rt);
     state.prompt_fails.lock().unwrap().remove(&key);

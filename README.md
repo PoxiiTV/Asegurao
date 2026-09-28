@@ -1,122 +1,144 @@
-# 🛡️ Asegurao
+<div align="center">
 
-Protege tus aplicaciones de Windows con contraseña. Cuando alguien intenta abrir
-una app protegida, Asegurao la **congela** al instante y pide la clave para
-continuar.
+<img src="src-tauri/icons/128x128@2x.png" width="128" alt="Asegurao" />
 
-Reescritura completa y en español de [AppLocker](https://github.com/Hachiiki/AppLocker),
-con interfaz nueva (Tauri + Svelte), temas, historial y más seguridad.
+# Asegurao
 
-*(English below · [English version](#-asegurao-english))*
+### 🔐 Ponle candado a tus apps de Windows
+
+**¿Alguien cotilleando tu Telegram, tus juegos o tus documentos?**
+Asegurao **congela** la app al instante y no la suelta hasta que pongas la contraseña.
+
+![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D4?logo=windows&logoColor=white)
+![Versión](https://img.shields.io/badge/versión-1.0.0-F59E0B)
+![Tauri](https://img.shields.io/badge/Tauri-2-24C8DB?logo=tauri&logoColor=white)
+![Rust](https://img.shields.io/badge/Rust-🦀-000000?logo=rust&logoColor=white)
+![Svelte](https://img.shields.io/badge/Svelte-5-FF3E00?logo=svelte&logoColor=white)
+![Licencia](https://img.shields.io/badge/licencia-MIT-22C55E)
+
+**[⬇️ Descargar](../../releases/latest)** · **[🇬🇧 English](#-english)**
+
+</div>
 
 ---
 
+## 🤔 ¿Qué hace?
+
+1. 🎯 Eliges qué apps proteger.
+2. 🧊 Alguien las abre → Asegurao las **congela** en el acto.
+3. 🔑 Aparece una ventanita pidiendo la contraseña.
+4. ✅ ¿Acierta? La app **sigue justo donde estaba**. ❌ ¿Falla? Se cierra y queda registrado.
+
+Sin pantallas negras, sin cerrar tu trabajo, sin dramas. Ligerísimo: **instalador de 1,5 MB**.
+
 ## ✨ Características
 
-- **Contraseña maestra** para entrar y autorizar cambios (hash **Argon2id**).
-- **Contraseña por app**, propia o reutilizando la maestra.
-- **Congela** la app en vez de cerrarla: al acertar, sigue donde estaba.
-- **Tiempo de confianza**: tras desbloquear, no volver a pedir la clave durante
-  5 / 15 / 60 min.
-- **Historial** de intentos (concedidos, denegados, manipulación).
-- **Foto del intruso** opcional (webcam) tras varios fallos.
-- **Añade apps** desde las instaladas, las abiertas ahora o cualquier `.exe`.
-- **3 temas**: Grafito, Bóveda y Aurora.
-- Vive en la **bandeja del sistema** y arranca con Windows.
-- Nivel **Fortaleza**: para desactivar la protección, cambiar la clave o
-  desinstalar, Windows pide **también** tu contraseña (UAC).
+| | |
+|---|---|
+| 🔑 **Contraseña maestra** | PIN (mín. 4 dígitos) o contraseña, guardada con **Argon2id**. Nunca en texto plano. |
+| 🗝️ **Clave por app** | Cada app con su propia clave, o reutiliza la maestra. |
+| 🧊 **Congela, no mata** | Suspende el proceso: al desbloquear, todo sigue como lo dejaste. |
+| ⏱️ **Tiempo de confianza** | Tras desbloquear, no vuelve a preguntar durante 5 / 15 / 60 min. |
+| 📜 **Historial** | Quién intentó abrir qué, cuándo, y si acertó o no. |
+| 📸 **Foto del intruso** | Opcional: foto con la webcam tras varios fallos. 😏 |
+| ➕ **Añadir apps fácil** | Desde las instaladas, las abiertas ahora o cualquier `.exe`. |
+| 🎨 **3 temas** | Grafito, Bóveda y Aurora. |
+| 🛡️ **Nivel Fortaleza** | Quitar protección, cambiar la clave o desinstalar pide **también** tu contraseña de Windows (UAC). |
+| 🚫 **Desinstalar protegido** | El desinstalador exige la contraseña maestra. |
+| 🪶 **Discreto** | Vive en la bandeja del sistema y arranca con Windows. |
 
-## 🔒 Hasta dónde protege (sé realista)
+## ⬇️ Instalación
+
+1. Descarga **`Asegurao_x.x.x_x64-setup.exe`** desde [Releases](../../releases/latest).
+2. Instálalo y sigue el asistente: creas tu contraseña maestra y eliges las apps.
+3. Listo. Asegurao se queda vigilando en la bandeja. 🛡️
+
+> ⚠️ **Aviso de Windows:** al ser un `.exe` sin firmar que controla otros procesos,
+> SmartScreen puede decir *"Windows protegió su PC"* → **Más información** →
+> **Ejecutar de todas formas**. Es normal en este tipo de software.
+
+## 🔒 Hasta dónde protege (siendo sinceros)
 
 Asegurao frena de sobra a cualquiera que use tu ordenador de forma normal:
-hermanos, hijos, compañeros de piso, un curioso de paso.
+**hermanos, hijos, compañeros de piso, el curioso de turno**. 👀
 
-Lo que **ningún** programa puede impedir por sí solo es que una persona que:
+Lo que **ningún** programa puede impedir por sí solo es que alguien que **sea
+administrador**, **sepa tu contraseña de Windows** y tenga conocimientos avanzados
+arranque desde un USB o saque el disco. Para eso, la defensa real es
+**BitLocker + contraseña de BIOS**. Quien te prometa "imposible de saltar" sin eso, miente.
 
-- **sea administrador**, **sepa tu contraseña de Windows** y tenga conocimientos
-  avanzados,
-
-arranque desde un USB o saque el disco. Contra ese caso extremo la única defensa
-real es **BitLocker + contraseña de BIOS** (configuración de Windows, no de esta
-app). Cualquiera que prometa "imposible de saltar" sin eso, miente.
-
-## 🖥️ Requisitos
-
-- Windows 10 / 11
-- Permisos de administrador (para congelar y relanzar procesos)
-
-## 🚀 Desarrollo
+## 🛠️ Desarrollo
 
 ```bash
 npm install
 npm run tauri dev      # o doble clic en start.bat
+npm run tauri build    # o doble clic en deploy.bat → deploy-hosting/
 ```
 
-## 📦 Compilar
-
-```bash
-npm run tauri build    # o doble clic en deploy.bat
-```
-
-El instalador queda en `src-tauri/target/release/bundle/nsis/`
-(`deploy.bat` además lo copia a `deploy-hosting/`).
-
-> ⚠️ Al ser un `.exe` sin firmar que controla otros procesos, Windows Defender o
-> SmartScreen pueden avisar la primera vez ("Windows protegió su PC" → *Más
-> información* → *Ejecutar de todas formas*). Es normal en software de este tipo.
-
-## 🛠️ Tecnología
-
-Tauri 2 · Rust · Svelte 5 · Vite
+**Stack:** Tauri 2 · Rust · Svelte 5 · Vite
 
 ---
 
-# 🛡️ Asegurao (English)
+<div align="center">
 
-Password-protect your Windows apps. When someone tries to open a protected app,
-Asegurao **freezes** it instantly and asks for the password to continue.
+# 🇬🇧 English
 
-A full Spanish rewrite of [AppLocker](https://github.com/Hachiiki/AppLocker) with
-a brand-new UI (Tauri + Svelte), themes, history and stronger security.
+### 🔐 Lock your Windows apps with a password
+
+</div>
+
+**Someone snooping on your Telegram, games or documents?**
+Asegurao **freezes** the app instantly and won't let go until the password is entered.
+
+## 🤔 How it works
+
+1. 🎯 Pick the apps you want to protect.
+2. 🧊 Someone opens one → Asegurao **freezes** it on the spot.
+3. 🔑 A small window asks for the password.
+4. ✅ Correct? The app **resumes right where it was**. ❌ Wrong? It's closed and logged.
+
+No black screens, no lost work. Super light: **1.5 MB installer**.
 
 ## ✨ Features
 
-- **Master password** to enter and authorize changes (**Argon2id** hashing).
-- **Per-app password**, custom or reusing the master one.
-- **Freezes** the app instead of killing it: unlock and it resumes where it was.
-- **Trust window**: after unlocking, don't ask again for 5 / 15 / 60 min.
-- **Attempt history** (allowed, denied, tampering).
-- Optional **intruder photo** (webcam) after several failures.
-- **Add apps** from installed ones, currently running ones, or any `.exe`.
-- **3 themes**: Grafito, Bóveda, Aurora.
-- Lives in the **system tray** and starts with Windows.
-- **Fortress** level: disabling protection, changing the password or
-  uninstalling also requires your Windows password (UAC).
+- 🔑 **Master password**: PIN (min. 4 digits) or password, stored with **Argon2id**.
+- 🗝️ **Per-app password**, or reuse the master one.
+- 🧊 **Freezes, doesn't kill**: unlock and everything is as you left it.
+- ⏱️ **Trust window**: no re-prompt for 5 / 15 / 60 min after unlocking.
+- 📜 **History** of every attempt.
+- 📸 Optional **intruder photo** (webcam) after several failures. 😏
+- ➕ **Add apps** from installed ones, running ones, or any `.exe`.
+- 🎨 **3 themes**: Grafito, Bóveda, Aurora.
+- 🛡️ **Fortress level**: weakening protection or uninstalling also requires your Windows password (UAC).
+- 🚫 **Protected uninstall**: the uninstaller asks for the master password.
+- 🪶 Lives in the **system tray** and starts with Windows.
 
-## 🔒 How far it protects (be realistic)
+## ⬇️ Install
 
-Asegurao easily stops anyone using your computer normally. What **no** program
-alone can stop is an **administrator who knows your Windows password** and has
-advanced skills booting from USB or removing the drive — only **BitLocker + BIOS
-password** defends against that (a Windows setting, not this app).
+Download **`Asegurao_x.x.x_x64-setup.exe`** from [Releases](../../releases/latest),
+run it and follow the wizard. If SmartScreen complains (unsigned app), click
+**More info** → **Run anyway**.
 
-## 🖥️ Requirements
+## 🔒 How far it protects (honestly)
 
-- Windows 10 / 11
-- Administrator rights (to freeze and relaunch processes)
+It easily stops anyone using your PC normally. What **no** app alone can stop is an
+**administrator who knows your Windows password** booting from USB or pulling the
+drive — only **BitLocker + a BIOS password** defends against that.
 
-## 🚀 Development / Build
+## 🛠️ Development
 
 ```bash
 npm install
-npm run tauri dev      # run
-npm run tauri build    # build installer
+npm run tauri dev
+npm run tauri build
 ```
-
-## 🛠️ Stack
-
-Tauri 2 · Rust · Svelte 5 · Vite
 
 ---
 
-Basado en AppLocker de Hachiki · Licencia MIT
+<div align="center">
+
+Basado en / Based on [AppLocker](https://github.com/Hachiiki/AppLocker) · MIT
+
+Hecho con 🧡 por **Poxi**
+
+</div>

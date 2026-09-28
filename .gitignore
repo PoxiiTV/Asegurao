@@ -1,0 +1,22 @@
+# Dependencias
+node_modules
+
+# Build frontend
+/build
+/.svelte-kit
+/package
+
+# Build Rust / Tauri
+/src-tauri/target
+/src-tauri/gen/schemas
+
+# Salida de deploy
+/deploy-hosting
+
+# Companion de diseño (temporal)
+/.superpowers
+
+# Sistema
+.DS_Store
+Thumbs.db
+vite.config.js.timestamp-*

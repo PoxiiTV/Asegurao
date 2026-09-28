@@ -18,14 +18,22 @@ use tauri_plugin_autostart::ManagerExt;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
-        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+    // Modo "puerta de desinstalación": lo lanza el desinstalador para exigir la
+    // contraseña maestra antes de continuar (ver hooks.nsh).
+    let gate = std::env::args().any(|a| a == "--uninstall-gate");
+
+    let mut builder = tauri::Builder::default();
+    if !gate {
+        builder = builder.plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
             if let Some(win) = app.get_webview_window("main") {
                 let _ = win.show();
                 let _ = win.unminimize();
                 let _ = win.set_focus();
             }
-        }))
+        }));
+    }
+
+    builder
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_notification::init())
@@ -54,8 +62,27 @@ pub fn run() {
             commands::clear_history,
             commands::unlock_attempt,
             commands::unlock_cancel,
+            commands::gate_check,
+            commands::gate_cancel,
         ])
-        .setup(|app| {
+        .setup(move |app| {
+            // Puerta de desinstalación: solo la ventana de contraseña, nada más.
+            if gate {
+                let win = tauri::WebviewWindowBuilder::new(app, "gate", tauri::WebviewUrl::default())
+                    .title("Asegurao")
+                    .inner_size(380.0, 440.0)
+                    .center()
+                    .resizable(false)
+                    .always_on_top(true)
+                    .build()?;
+                win.on_window_event(|event| {
+                    if let WindowEvent::CloseRequested { .. } = event {
+                        std::process::exit(1);
+                    }
+                });
+                return Ok(());
+            }
+
             let data = store::load();
             let start_with_windows = data.settings.start_with_windows;
             let state = Arc::new(AppState::new(data));
@@ -122,6 +149,9 @@ pub fn run() {
                 });
             }
 
+            if let Some(win) = app.get_webview_window("main") {
+                let _ = win.show();
+            }
             watcher::spawn(app.handle().clone(), state);
             Ok(())
         })

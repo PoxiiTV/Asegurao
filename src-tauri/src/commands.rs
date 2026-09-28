@@ -367,6 +367,26 @@ pub fn clear_history(state: State<Arc<AppState>>, master: String) -> Result<(), 
     Ok(())
 }
 
+// ---------- Puerta de desinstalación ----------
+
+#[tauri::command]
+pub fn gate_check(secret: String) -> bool {
+    let data = store::load();
+    let ok = data
+        .auth
+        .map(|a| verify_secret(&secret, &a.hash))
+        .unwrap_or(false);
+    if ok {
+        std::process::exit(0); // el desinstalador continúa
+    }
+    false
+}
+
+#[tauri::command]
+pub fn gate_cancel() {
+    std::process::exit(1); // el desinstalador se cancela
+}
+
 // ---------- Flujo de desbloqueo (desde la ventana flotante) ----------
 
 #[tauri::command]

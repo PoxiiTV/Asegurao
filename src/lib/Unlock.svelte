@@ -93,7 +93,6 @@
     background: var(--app-bg);
     background-attachment: fixed;
     border: 1px solid var(--border2);
-    box-shadow: var(--shadow);
     display: flex;
     flex-direction: column;
     gap: 13px;

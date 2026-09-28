@@ -286,8 +286,8 @@
     flex: 1;
   }
   .sel {
-    background: var(--surface2);
-    border: 1px solid var(--border);
+    background: #26282d;
+    border: 1px solid var(--border2);
     color: var(--text);
     border-radius: 10px;
     padding: 8px 12px;
@@ -295,6 +295,12 @@
     font-family: inherit;
     font-weight: 600;
     outline: none;
+    color-scheme: dark;
+    cursor: pointer;
+  }
+  .sel option {
+    background: #26282d;
+    color: var(--text);
   }
   .switch {
     width: 44px;

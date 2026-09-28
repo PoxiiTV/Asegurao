@@ -7,9 +7,12 @@
   import Login from '$lib/Login.svelte';
   import Main from '$lib/Main.svelte';
   import Unlock from '$lib/Unlock.svelte';
+  import Gate from '$lib/Gate.svelte';
   import Toasts from '$lib/Toasts.svelte';
 
-  const isUnlock = getCurrentWindow().label === 'unlock';
+  const label = getCurrentWindow().label;
+  const isUnlock = label === 'unlock';
+  const isGate = label === 'gate';
 
   // La ventana flotante de desbloqueo es transparente: quitamos el fondo del body.
   if (isUnlock && typeof document !== 'undefined') {
@@ -37,7 +40,7 @@
   }
 
   onMount(() => {
-    if (isUnlock) return;
+    if (isUnlock || isGate) return;
     boot();
     const un = listen('session:lock', () => {
       stage = 'login';
@@ -48,6 +51,8 @@
 
 {#if isUnlock}
   <Unlock />
+{:else if isGate}
+  <Gate />
 {:else}
   {#if stage === 'setup'}
     <Setup onDone={async () => { await reload(); stage = 'main'; }} />

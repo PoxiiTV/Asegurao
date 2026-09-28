@@ -11,7 +11,7 @@
   }: { settings: Settings; authKind: string; refresh: () => void } = $props();
 
   const VERSION = '1.0.0';
-  const REPO = 'Poxi/Asegurao'; // ajusta a tu repositorio real
+  const REPO = 'PoxiiTV/Asegurao';
 
   let s = $state<Settings>({ ...settings, intruder: { ...settings.intruder } });
   let changingPass = $state(false);

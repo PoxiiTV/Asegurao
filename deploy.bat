@@ -25,6 +25,10 @@ if exist "%NSIS%" (
   copy /y "%NSIS%\*.sig" "%OUT%" >nul 2>&1
 )
 
+REM Portable: el .exe de release ya lleva el frontend e icono embebidos.
+for /f "tokens=2 delims=:, " %%v in ('findstr /c:"\"version\"" "%~dp0src-tauri\tauri.conf.json"') do set "VER=%%~v"
+copy /y "%~dp0src-tauri\target\release\asegurao.exe" "%OUT%\Asegurao_%VER%_x64-portable.exe" >nul
+
 echo.
 echo Listo. Archivos en: %OUT%
 dir /b "%OUT%"

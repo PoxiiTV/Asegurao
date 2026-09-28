@@ -46,7 +46,8 @@
     "targets": ["nsis"],
     "windows": {
       "nsis": {
-        "installerHooks": "./hooks.nsh"
+        "installerHooks": "./hooks.nsh",
+        "installerIcon": "icons/icon.ico"
       }
     },
     "icon": [

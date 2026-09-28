@@ -41,7 +41,7 @@
   }
 
   async function doRecover() {
-    if (!rCode || rSecret.length < (rKind === 'pin' ? 6 : 8)) {
+    if (!rCode || rSecret.length < (rKind === 'pin' ? 4 : 8)) {
       toast('Revisa el código y la nueva contraseña', 'error');
       return;
     }
@@ -91,7 +91,7 @@
       <input
         class="field"
         type="password"
-        placeholder={rKind === 'pin' ? 'Nuevo PIN (mín. 6)' : 'Nueva contraseña (mín. 8)'}
+        placeholder={rKind === 'pin' ? 'Nuevo PIN (mín. 4)' : 'Nueva contraseña (mín. 8)'}
         bind:value={rSecret}
         style="margin-top:10px"
       />

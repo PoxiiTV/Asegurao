@@ -46,7 +46,7 @@
   }
 
   async function changePassword() {
-    if (cNew.length < (cKind === 'pin' ? 6 : 8)) {
+    if (cNew.length < (cKind === 'pin' ? 4 : 8)) {
       toast(`La nueva ${cKind === 'pin' ? 'clave' : 'contraseña'} es demasiado corta`, 'error');
       return;
     }
@@ -195,7 +195,7 @@
       <button class:on={cKind === 'pin'} onclick={() => (cKind = 'pin')}>PIN</button>
       <button class:on={cKind === 'password'} onclick={() => (cKind = 'password')}>Contraseña</button>
     </div>
-    <input class="field" type="password" placeholder={cKind === 'pin' ? 'Nuevo PIN (mín. 6)' : 'Nueva contraseña (mín. 8)'} bind:value={cNew} style="margin-top:10px" />
+    <input class="field" type="password" placeholder={cKind === 'pin' ? 'Nuevo PIN (mín. 4)' : 'Nueva contraseña (mín. 8)'} bind:value={cNew} style="margin-top:10px" />
     <button class="btn" style="width:100%;margin-top:16px" onclick={changePassword}>Cambiar</button>
   </Modal>
 {/if}

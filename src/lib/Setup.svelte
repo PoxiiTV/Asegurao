@@ -14,7 +14,7 @@
   let level = $state('fortaleza');
   let busy = $state(false);
 
-  const minLen = $derived(kind === 'pin' ? 6 : 8);
+  const minLen = $derived(kind === 'pin' ? 4 : 8);
   const valid = $derived(
     secret.length >= minLen &&
       secret === confirm &&
@@ -87,7 +87,7 @@
           class="field"
           type="password"
           inputmode={kind === 'pin' ? 'numeric' : 'text'}
-          placeholder={kind === 'pin' ? 'Mínimo 6 dígitos' : 'Mínimo 8 caracteres'}
+          placeholder={kind === 'pin' ? 'Mínimo 4 dígitos' : 'Mínimo 8 caracteres'}
           bind:value={secret}
         />
         <input

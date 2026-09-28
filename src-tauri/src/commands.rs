@@ -389,6 +389,21 @@ pub fn gate_cancel() {
 
 // ---------- Flujo de desbloqueo (desde la ventana flotante) ----------
 
+// El vigilante puede emitir "lock:prompt" antes de que la ventana cargue y el
+// evento se pierde; la ventana pregunta al montarse si ya hay uno en curso.
+#[tauri::command]
+pub fn unlock_pending(state: State<Arc<AppState>>) -> Option<crate::watcher::Prompt> {
+    let exe = state.rt.lock().unwrap().pending.clone()?;
+    let data = state.data.lock().unwrap();
+    let a = data.apps.iter().find(|a| a.exe.eq_ignore_ascii_case(&exe))?;
+    Some(crate::watcher::Prompt {
+        exe: a.exe.clone(),
+        display: a.display.clone(),
+        icon: a.icon.clone(),
+        auth_kind: a.auth_kind.clone(),
+    })
+}
+
 #[tauri::command]
 pub fn unlock_attempt(state: State<Arc<AppState>>, exe: String, secret: String) -> Result<String, String> {
     let key = exe.to_lowercase();

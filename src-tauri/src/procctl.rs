@@ -15,8 +15,9 @@ use windows::Win32::System::Diagnostics::ToolHelp::{
     CreateToolhelp32Snapshot, Process32FirstW, Process32NextW, PROCESSENTRY32W, TH32CS_SNAPPROCESS,
 };
 use windows::Win32::System::LibraryLoader::{GetProcAddress, LoadLibraryW};
+use windows::Win32::System::RemoteDesktop::ProcessIdToSessionId;
 use windows::Win32::System::Threading::{
-    CreateProcessW, OpenProcess, QueryFullProcessImageNameW, TerminateProcess, PROCESS_INFORMATION,
+    CreateProcessW, GetCurrentProcessId, OpenProcess, QueryFullProcessImageNameW, TerminateProcess, PROCESS_INFORMATION,
     PROCESS_NAME_WIN32, PROCESS_QUERY_LIMITED_INFORMATION, PROCESS_SUSPEND_RESUME,
     PROCESS_TERMINATE, STARTUPINFOW,
 };
@@ -58,10 +59,18 @@ pub fn list_processes() -> Vec<Proc> {
     out
 }
 
+fn session_of(pid: u32) -> Option<u32> {
+    let mut s = 0u32;
+    unsafe { ProcessIdToSessionId(pid, &mut s).ok().map(|_| s) }
+}
+
+// Solo procesos de la sesión del usuario: los servicios (sesión 0, p. ej. el de
+// Everything) no se pueden congelar ni tienen ventana, y bloqueaban el vigilante.
 pub fn running_pids(exe_name: &str) -> Vec<u32> {
+    let mine = session_of(unsafe { GetCurrentProcessId() });
     list_processes()
         .into_iter()
-        .filter(|p| p.exe.eq_ignore_ascii_case(exe_name))
+        .filter(|p| p.exe.eq_ignore_ascii_case(exe_name) && session_of(p.pid) == mine)
         .map(|p| p.pid)
         .collect()
 }
@@ -252,4 +261,17 @@ unsafe fn hicon_to_png(hicon: HICON) -> Option<Vec<u8>> {
     let mut out = std::io::Cursor::new(Vec::new());
     img.write_to(&mut out, image::ImageFormat::Png).ok()?;
     Some(out.into_inner())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn solo_procesos_de_mi_sesion() {
+        // services.exe vive en la sesión 0: nunca debe contar como "abierta".
+        assert!(running_pids("services.exe").is_empty());
+        // explorer.exe corre en la sesión del usuario que lanza los tests.
+        assert!(!running_pids("explorer.exe").is_empty());
+    }
 }

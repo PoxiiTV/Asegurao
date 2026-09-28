@@ -62,6 +62,7 @@ pub fn run() {
             commands::clear_history,
             commands::unlock_attempt,
             commands::unlock_cancel,
+            commands::unlock_pending,
             commands::gate_check,
             commands::gate_cancel,
         ])

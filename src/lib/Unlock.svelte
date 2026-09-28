@@ -21,12 +21,16 @@
 
   const win = getCurrentWindow();
 
+  function show(p: Prompt) {
+    prompt = p;
+    secret = '';
+    setTimeout(() => input?.focus(), 60);
+  }
+
   onMount(() => {
-    const un = listen<Prompt>('lock:prompt', (e) => {
-      prompt = e.payload;
-      secret = '';
-      setTimeout(() => input?.focus(), 60);
-    });
+    const un = listen<Prompt>('lock:prompt', (e) => show(e.payload));
+    // Por si el aviso llegó antes de que esta ventana cargara.
+    un.then(() => api.unlockPending<Prompt>()).then((p) => p && !prompt && show(p));
     return () => {
       un.then((f) => f());
     };

@@ -2,7 +2,7 @@
 
 Bloqueador de apps de Windows con contraseña. Reescritura en español de
 [AppLocker](https://github.com/Hachiiki/AppLocker). **Stack:** Tauri 2 · Rust ·
-Svelte 5 · Vite. Idioma: solo español. Repo privado: `PoxiiTV/Asegurao` (release v1.0.0 con el setup).
+Svelte 5 · Vite. Idioma: solo español. Repo público: `PoxiiTV/Asegurao` (release v1.0.0 con el setup).
 
 ## Arquitectura
 
@@ -47,7 +47,6 @@ Release en GitHub: solo el setup.
 
 - Arranque **elevado y silencioso** con Windows (tarea programada) — hoy autostart
   normal; congelar apps del mismo usuario funciona sin admin, apps elevadas no.
-- "Buscar actualizaciones" usa la API pública de GitHub: con repo privado siempre falla.
 - `Allow::UntilExit` con apps que viven en bandeja (Telegram): cerrar la ventana no las
   cierra, siguen desbloqueadas hasta salir desde la bandeja.
 - Modo Extremo / Fortaleza avanzado (bloqueo de herramientas): descartado por ahora.
